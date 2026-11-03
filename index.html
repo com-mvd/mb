@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>COM</title>
+<title>MB</title>
 <link rel="icon" type="image/png" href="assets/logo-ciemsa.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
@@ -29,56 +29,101 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .wrap{max-width:1440px;margin:0 auto;padding:1.5rem clamp(16px,2.5vw,2rem) 3rem}
 
 /* Barra del título: igual a la de los dashboards de com-mvd */
-.barra{position:sticky;top:0;z-index:1200;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.barra{background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
-.titulo{display:flex;align-items:center;gap:10px}
 .titulo h1{font-family:'Segoe UI',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+/* Mientras carga: solo la ruedita, igual que en com-mvd/dashboard */
+.carga{min-height:max(260px,calc(100vh - 84px));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.ruedita{width:38px;height:38px;border:3px solid #dbe3ed;border-top-color:#2563eb;border-radius:50%;animation:girar .8s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.carga-t{color:#64748b;font-size:14px;font-weight:600}
+.carga-t.error{color:#b42318}
 
-/* Día + indicadores en una fila */
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.kpi{padding:.9rem 1rem;text-align:center;border-top:4px solid var(--c);display:flex;flex-direction:column;justify-content:center}
-.kpi-n{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
-.kpi-t{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
-.dia{cursor:pointer}
-.dia select{border:0;background:transparent;font-size:20px;font-weight:700;color:var(--text);text-align:center;text-align-last:center;outline:none;width:100%;line-height:33px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
 
-/* Pestañas de turno (mismo azul que la barra del título) */
-.cats{display:flex;justify-content:center;gap:6px;padding:6px;margin-bottom:14px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);box-shadow:0 4px 12px rgba(15,23,42,.25);overflow-x:auto;scrollbar-width:none}
-.cats button{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:#c7d5ea;font-size:13.5px;font-weight:600;padding:9px 18px;border-radius:10px;white-space:nowrap}
+/* Día y filtros de servicio y estado (mismo azul que la barra del título) */
+.cats{display:flex;justify-content:center;align-items:center;gap:4px;padding:6px;margin-bottom:14px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);box-shadow:0 4px 12px rgba(15,23,42,.25);overflow-x:auto;scrollbar-width:none}
+.cats button{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:#c7d5ea;font-size:13px;font-weight:600;padding:9px 12px;border-radius:10px;white-space:nowrap}
 .cats button:hover{background:rgba(255,255,255,.08);color:#fff}
-.cats button.on{background:#fff;color:#0f172a;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+/* Marcado: el mismo tono que al pasar el mouse, pero más fuerte */
+.cats button.on,.cats button.on:hover{background:rgba(255,255,255,.2);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
 .cats small{font-size:12px;opacity:.7}
+.cats i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+/* Fecha: mismo tono que el botón marcado, texto y flecha juntos y centrados */
+.cats .fecha,.cats .fecha:hover{flex:none;justify-content:center;min-width:150px;padding:9px 16px;
+  background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);color:#fff;font-weight:700}
+.fecha svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.fecha[aria-expanded="true"] svg{transform:rotate(180deg)}
+/* Lista de días propia, con el azul de la barra (la del navegador era otro estilo).
+   Va fija en la pantalla porque la barra recorta lo que sobresale */
+.dias{position:fixed;z-index:2000;width:180px;max-height:340px;overflow-y:auto;padding:6px;border-radius:12px;
+  background:linear-gradient(160deg,#0f172a 0%,#16213e 60%,#1b3f74 100%);box-shadow:0 12px 28px rgba(15,23,42,.35);
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+.dias button{display:block;width:100%;border:0;background:transparent;color:#c7d5ea;font-size:13px;font-weight:600;text-align:center;padding:8px 10px;border-radius:8px}
+.dias button:hover{background:rgba(255,255,255,.08);color:#fff}
+.dias button.on{background:rgba(255,255,255,.2);color:#fff;font-weight:700}
+.cats .sep{flex:none;width:1px;align-self:stretch;margin:4px 6px;background:rgba(255,255,255,.2)}
 
 /* Tabla cerrada tipo planilla: todo centrado; las columnas cortas miden lo justo */
-.tabla-card{padding:1rem}
+.tabla-card{padding:1rem;border-radius:16px}
 .tabla-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
 .tabla{width:100%;border-collapse:collapse;font-size:13px}
-.tabla th{font-size:10.5px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em;text-align:center;padding:.6rem .7rem;background:#F7F6F3;border:1px solid var(--border);white-space:nowrap}
 .tabla td{padding:.55rem .7rem;border:1px solid #ECE9E3;vertical-align:middle;text-align:center;color:var(--text2);line-height:1.35}
 .tabla tr>:first-child{border-left:0}
 .tabla tr>:last-child{border-right:0}
-.tabla thead th{border-top:0}
+.tabla tbody tr:first-child td{border-top:0}
 .tabla tbody tr:last-child td{border-bottom:0}
 .tabla .corta{width:1%;white-space:nowrap}
 .tabla td.hora{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
-/* La marca del servicio va a la izquierda de la fila */
-.tabla td.marca{border-left:6px solid var(--c)}
+/* La marca del servicio va pintada dentro de la celda Horario (sombra interna, no borde),
+   así el encabezado y las filas de turno ocupan todo el ancho sin pedazos sueltos */
+.tabla td.marca{box-shadow:inset 6px 0 0 var(--c);padding-left:calc(.7rem + 6px)}
 .tabla td.tarea{font-weight:700;color:var(--text);min-width:150px}
 .tabla td.texto{white-space:pre-line;min-width:160px}
-.tabla tr.turno td{background:#F3F4F8;color:#1b3f74;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.45rem .7rem;border-left:0}
+.tabla tr.turno td{background:#F3F4F8;color:#1b3f74;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.45rem .7rem}
 .est{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--bc);color:var(--c);white-space:nowrap}
 .est::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.corto{display:none}
+.coma{display:none} /* en el celular los supervisores van en un renglón separados por coma */
 .vacio{text-align:center;color:var(--text2);font-size:14px;font-weight:600;padding:2.5rem 1rem}
 
 @media (max-width:760px){
   .barra-in{padding:10px 16px;min-height:64px}
   .titulo h1{font-size:21px}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .dia{grid-column:1/-1}
-  .cats{justify-content:flex-start}
-  .tabla-card{padding:.6rem}
+  .carga{min-height:max(260px,calc(100vh - 64px))}
+  .wrap{padding:1rem 12px 2rem}
+
+  /* Barra: la fecha a lo ancho arriba, abajo un renglón de servicios y otro de estados */
+  .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible}
+  .cats .sep{display:none}
+  .cats .fecha{grid-column:1/-1}
+  .cats button{justify-content:center;flex-wrap:wrap;gap:2px 6px;white-space:normal;text-align:center;line-height:1.2;font-size:12px;padding:8px 4px}
+  .cats i{width:8px;height:8px}
+  .largo{display:none}
+  .corto{display:inline}
+
+  /* Tabla → una tarjeta por tarea: hora y estado arriba, después tarea, detalle, supervisor y observaciones */
+  .tabla-card{padding:0;background:transparent;border:0;box-shadow:none}
+  .tabla-wrap{overflow:visible;border:0;border-radius:0}
+  .tabla,.tabla tbody{display:block}
+  .tabla tr.turno{display:block;margin:14px 0 8px}
+  .tabla tr.turno:first-child{margin-top:0}
+  .tabla tr.turno td{display:block;border:0;border-radius:10px;padding:.5rem .7rem}
+  .tabla tr.fila{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"hora est" "tarea tarea" "det det" "sup sup" "obs obs";
+    gap:6px 10px;margin-bottom:8px;padding:.75rem .85rem .8rem 1.05rem;background:var(--card);border:1px solid var(--border);border-radius:12px;
+    box-shadow:inset 5px 0 0 var(--c),var(--shadow)}
+  .tabla tr.fila td{display:block;border:0;padding:0;width:auto;min-width:0;white-space:normal}
+  .tabla td.marca{box-shadow:none;padding-left:0}
+  .tabla td:empty{display:none}
+  .tabla td.hora{grid-area:hora;text-align:left;font-size:13px}
+  .tabla td.estc{grid-area:est;text-align:right}
+  .tabla td.tarea{grid-area:tarea;font-size:14px;line-height:1.3}
+  .tabla td.det{grid-area:det;font-size:12.5px}
+  .tabla td.sup{grid-area:sup;font-size:12px;color:var(--text3)}
+  .tabla td.sup br{display:none}
+  .tabla td.sup .coma{display:inline}
+  .tabla td.obs{grid-area:obs;font-size:12.5px;color:var(--text);background:#FAF9F6;border:1px solid #EFECE6;border-radius:9px;padding:.45rem .6rem}
 }
 </style>
 </head>
@@ -89,33 +134,51 @@ button,select{font:inherit;color:inherit;cursor:pointer}
   </div>
 </header>
 
-<div class="wrap">
-  <div class="kpis">
-    <label class="card kpi dia" style="--c:#1b3f74">
-      <select id="fecha" aria-label="Día"></select>
-      <div class="kpi-t">Día</div>
-    </label>
-    <div id="kpis" style="display:contents"></div>
-  </div>
-  <nav class="cats" id="turnos"></nav>
-  <div class="card tabla-card"><div id="contenido"><div class="vacio">Cargando…</div></div></div>
+<div class="carga" id="carga" role="status" aria-live="polite">
+  <span class="ruedita" id="ruedita" aria-hidden="true"></span>
+  <div class="carga-t" id="cargaT">Cargando información</div>
 </div>
+
+<div class="wrap" id="panel" hidden>
+  <nav class="cats">
+    <button class="fecha" id="fecha" aria-haspopup="listbox" aria-expanded="false">
+      <span id="fechaTxt"></span>
+      <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg>
+    </button>
+    <span class="sep"></span>
+    <div id="filtros" style="display:contents"></div>
+  </nav>
+  <div class="card tabla-card" id="contenido"></div>
+</div>
+<div class="dias" id="dias" role="listbox" hidden></div>
 
 <script>
 // Aplicación web del Apps Script que lee la planilla (ver apps-script/Codigo.gs)
 const API_URL = 'https://script.google.com/macros/s/AKfycbwKx3Bo1V_IcMkGFb1MWEcwH9bEZI2NH4Topb7CeSdPZDaBrfzUurav2O5g2A2Orkl6/exec';
 
-const TURNOS = ['NOCTURNO', 'MATUTINO', 'VESPERTINO'];
+const SERVICIOS = [
+  // En el celular "Tareas " se oculta para que el botón entre en un renglón
+  { color: 'violeta', nombre: '<span class="largo">Tareas e</span><span class="corto">E</span>speciales' },
+  { color: 'azul',    nombre: 'Agenda' },
+  { color: 'naranja', nombre: 'Bolsones' },
+];
 const ESTADOS = {
   'realizado':  { c: 'var(--hecho)', bc: 'var(--hecho-bg)' },
   'en proceso': { c: 'var(--pend)',  bc: 'var(--pend-bg)' },
   'pendiente':  { c: 'var(--atr)',   bc: 'var(--atr-bg)' },
 };
+// Filtro por estado: "Sin realizar" junta Pendiente y las vacías, como el recuadro
+const FILTRO_ESTADOS = [
+  { id: 'realizado',  nombre: 'Realizadas',   c: 'var(--hecho)' },
+  { id: 'en proceso', nombre: 'En proceso',   c: 'var(--pend)' },
+  { id: 'sin',        nombre: 'Sin realizar', c: 'var(--atr)' },
+];
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 const $ = id => document.getElementById(id);
 let filas = [];
-let turno = 'TODOS';
+let servicio = 'TODOS';
+let estado = 'TODOS';
 
 function etiqueta(id) {
   const d = +id.slice(0, 2), m = +id.slice(2);
@@ -126,89 +189,127 @@ function escapar(s) {
   return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
+const deServicio = s => f => s === 'TODOS' || f.color === s;
+const deEstado = e => f => {
+  const est = f.estado.toLowerCase();
+  if (e === 'TODOS') return true;
+  if (e === 'sin') return est !== 'realizado' && est !== 'en proceso';
+  return est === e;
+};
+
 function llenarSelector(fechas, elegida) {
   const ids = fechas.map(f => f.id);
   if (!ids.includes(elegida)) ids.unshift(elegida);
-  $('fecha').innerHTML = ids.map(id => `<option value="${id}">${etiqueta(id)}</option>`).join('');
-  $('fecha').value = elegida;
+  $('dias').innerHTML = ids.map(id =>
+    `<button role="option" class="${id === elegida ? 'on' : ''}" data-dia="${id}">${etiqueta(id)}</button>`).join('');
+  $('fechaTxt').textContent = etiqueta(elegida);
 }
 
-function dibujarKpis() {
-  const cuenta = e => filas.filter(f => f.estado.toLowerCase() === e).length;
-  const hechas = cuenta('realizado');
-  const enProceso = cuenta('en proceso');
-  const kpi = (n, t, c) => `<div class="card kpi" style="--c:${c}">
-    <div class="kpi-n num">${n}</div><div class="kpi-t">${t}</div></div>`;
-  $('kpis').innerHTML =
-    kpi(filas.length, 'Tareas', '#1b3f74') +
-    kpi(hechas, 'Realizadas', 'var(--hecho)') +
-    kpi(enProceso, 'En proceso', 'var(--pend)') +
-    kpi(filas.length - hechas - enProceso, 'Sin realizar', 'var(--atr)');
+// Cada grupo cuenta según el filtro del otro grupo
+function dibujarFiltros() {
+  const porServicio = filas.filter(deServicio(servicio));
+  const porEstado = filas.filter(deEstado(estado));
+  const boton = (tipo, id, actual, nombre, n, color) =>
+    `<button class="${actual === id ? 'on' : ''}" data-${tipo}="${id}">` +
+    `${color ? `<i style="--c:${color}"></i>` : ''}<span>${nombre}</span> <small class="num">${n}</small></button>`;
+  $('filtros').innerHTML =
+    SERVICIOS.map(s => boton('servicio', s.color, servicio, s.nombre,
+      porEstado.filter(deServicio(s.color)).length, `var(--${s.color})`)).join('') +
+    '<span class="sep"></span>' +
+    FILTRO_ESTADOS.map(e => boton('estado', e.id, estado, e.nombre,
+      porServicio.filter(deEstado(e.id)).length, e.c)).join('');
 }
 
-function dibujarTurnos() {
-  const v = filas;
-  const boton = (id, nombre, n) =>
-    `<button class="${turno === id ? 'on' : ''}" data-turno="${id}">${nombre} <small class="num">${n}</small></button>`;
-  $('turnos').innerHTML = boton('TODOS', 'Todos', v.length) + TURNOS.map(t =>
-    boton(t, t[0] + t.slice(1).toLowerCase(), v.filter(f => f.turno.toUpperCase() === t).length)).join('');
-}
-
-function dibujarTabla() {
-  const v = filas.filter(f => turno === 'TODOS' || f.turno.toUpperCase() === turno);
+function dibujarTabla(v) {
   if (!v.length) { $('contenido').innerHTML = '<div class="vacio">Sin tareas.</div>'; return; }
 
   let actual = null, html = '';
   for (const f of v) {
-    if (turno === 'TODOS' && f.turno !== actual) {
+    if (f.turno !== actual) {
       actual = f.turno;
       html += `<tr class="turno"><td colspan="6">Turno ${escapar(actual.toLowerCase())}</td></tr>`;
     }
     const e = ESTADOS[f.estado.toLowerCase()];
-    const estado = f.estado
+    const etiquetaEstado = f.estado
       ? `<span class="est" style="--c:${e ? e.c : 'var(--gris)'};--bc:${e ? e.bc : 'var(--gris-bg)'}">${escapar(f.estado)}</span>`
       : '';
-    html += `<tr>
-      <td class="corta hora marca" style="--c:var(--${f.color})">${escapar(f.horario)}</td>
+    html += `<tr class="fila" style="--c:var(--${f.color})">
+      <td class="corta hora marca">${escapar(f.horario)}</td>
       <td class="tarea">${escapar(f.tarea)}</td>
-      <td class="texto">${escapar(f.detalle === '-' ? '' : f.detalle)}</td>
-      <td class="corta">${escapar(f.supervisor).replace(/, /g, '<br>')}</td>
-      <td class="corta">${estado}</td>
-      <td class="texto">${escapar(f.observaciones)}</td>
+      <td class="texto det">${escapar(f.detalle === '-' ? '' : f.detalle)}</td>
+      <td class="corta sup">${escapar(f.supervisor).replace(/, /g, '<span class="coma">, </span><br>')}</td>
+      <td class="corta estc">${etiquetaEstado}</td>
+      <td class="texto obs">${escapar(f.observaciones)}</td>
     </tr>`;
   }
-  $('contenido').innerHTML = `<div class="tabla-wrap"><table class="tabla">
-    <thead><tr><th class="corta">Horario</th><th>Tarea</th><th>Detalle</th><th class="corta">Supervisor</th>
-      <th class="corta">Estado</th><th>Observaciones</th></tr></thead>
-    <tbody>${html}</tbody></table></div>`;
+  $('contenido').innerHTML = `<div class="tabla-wrap"><table class="tabla"><tbody>${html}</tbody></table></div>`;
 }
 
 function dibujar() {
-  dibujarKpis();
-  dibujarTurnos();
-  dibujarTabla();
+  const v = filas.filter(deServicio(servicio)).filter(deEstado(estado));
+  dibujarFiltros();
+  dibujarTabla(v);
+}
+
+function mostrarCarga(texto, error) {
+  $('panel').hidden = true;
+  $('carga').hidden = false;
+  $('ruedita').hidden = !!error;
+  $('cargaT').textContent = texto;
+  $('cargaT').className = 'carga-t' + (error ? ' error' : '');
 }
 
 async function cargar(fecha) {
-  $('contenido').innerHTML = '<div class="vacio">Cargando…</div>';
+  mostrarCarga('Cargando información');
   try {
     const datos = await (await fetch(API_URL + (fecha ? `?fecha=${fecha}` : ''))).json();
     llenarSelector(datos.fechas, datos.fecha);
     filas = datos.filas;
     dibujar();
     if (datos.error) $('contenido').innerHTML = `<div class="vacio">${escapar(datos.error)}</div>`;
+    $('carga').hidden = true;
+    $('panel').hidden = false;
   } catch (err) {
-    $('contenido').innerHTML = '<div class="vacio">No se pudo leer la planilla.</div>';
+    mostrarCarga('No se pudo leer la planilla.', true);
   }
 }
 
-$('fecha').addEventListener('change', () => cargar($('fecha').value));
-$('turnos').addEventListener('click', e => {
-  const b = e.target.closest('[data-turno]');
+function cerrarDias() {
+  $('dias').hidden = true;
+  $('fecha').setAttribute('aria-expanded', 'false');
+}
+
+$('fecha').addEventListener('click', e => {
+  e.stopPropagation();
+  if (!$('dias').hidden) { cerrarDias(); return; }
+  const r = $('fecha').getBoundingClientRect();
+  $('dias').style.top = (r.bottom + 6) + 'px';
+  $('dias').style.left = r.left + 'px';
+  $('dias').style.width = Math.max(r.width, 180) + 'px';
+  $('dias').hidden = false;
+  $('fecha').setAttribute('aria-expanded', 'true');
+  const on = $('dias').querySelector('.on');
+  if (on) $('dias').scrollTop = on.offsetTop - $('dias').clientHeight / 2;
+});
+$('dias').addEventListener('click', e => {
+  const b = e.target.closest('[data-dia]');
   if (!b) return;
-  turno = b.dataset.turno;
-  dibujarTurnos();
-  dibujarTabla();
+  cerrarDias();
+  $('fechaTxt').textContent = etiqueta(b.dataset.dia);
+  cargar(b.dataset.dia);
+});
+document.addEventListener('click', e => { if (!$('dias').contains(e.target)) cerrarDias(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarDias(); });
+addEventListener('scroll', cerrarDias);
+addEventListener('resize', cerrarDias);
+$('filtros').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  // Sin nada marcado se ve todo; tocar el botón marcado lo desmarca
+  const alternar = (actual, id) => actual === id ? 'TODOS' : id;
+  if (b.dataset.servicio) servicio = alternar(servicio, b.dataset.servicio);
+  if (b.dataset.estado) estado = alternar(estado, b.dataset.estado);
+  dibujar();
 });
 cargar(); // sin fecha: el Apps Script devuelve hoy
 </script>
