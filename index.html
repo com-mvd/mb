@@ -85,7 +85,7 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .est{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--bc);color:var(--c);white-space:nowrap}
 .est::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
 .corto{display:none}
-.coma{display:none} /* en el celular los supervisores van en un renglón separados por coma */
+.extra,.ab{display:none} /* solo en el celular, al tocar la fila */
 .vacio{text-align:center;color:var(--text2);font-size:14px;font-weight:600;padding:2.5rem 1rem}
 
 @media (max-width:760px){
@@ -96,34 +96,33 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 
   /* Barra: la fecha a lo ancho arriba, abajo un renglón de servicios y otro de estados */
   .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;overflow:visible}
-  .cats .sep{display:none}
+  /* Las mismas líneas grises que en PC, acá horizontales entre cada renglón */
+  .cats .sep{grid-column:1/-1;width:auto;height:1px;margin:3px 6px}
   .cats .fecha{grid-column:1/-1}
   .cats button{justify-content:center;flex-wrap:wrap;gap:2px 6px;white-space:normal;text-align:center;line-height:1.2;font-size:12px;padding:8px 4px}
   .cats i{width:8px;height:8px}
   .largo{display:none}
   .corto{display:inline}
 
-  /* Tabla → una tarjeta por tarea: hora y estado arriba, después tarea, detalle, supervisor y observaciones */
-  .tabla-card{padding:0;background:transparent;border:0;box-shadow:none}
-  .tabla-wrap{overflow:visible;border:0;border-radius:0}
-  .tabla,.tabla tbody{display:block}
-  .tabla tr.turno{display:block;margin:14px 0 8px}
-  .tabla tr.turno:first-child{margin-top:0}
-  .tabla tr.turno td{display:block;border:0;border-radius:10px;padding:.5rem .7rem}
-  .tabla tr.fila{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"hora est" "tarea tarea" "det det" "sup sup" "obs obs";
-    gap:6px 10px;margin-bottom:8px;padding:.75rem .85rem .8rem 1.05rem;background:var(--card);border:1px solid var(--border);border-radius:12px;
-    box-shadow:inset 5px 0 0 var(--c),var(--shadow)}
-  .tabla tr.fila td{display:block;border:0;padding:0;width:auto;min-width:0;white-space:normal}
-  .tabla td.marca{box-shadow:none;padding-left:0}
-  .tabla td:empty{display:none}
-  .tabla td.hora{grid-area:hora;text-align:left;font-size:13px}
-  .tabla td.estc{grid-area:est;text-align:right}
-  .tabla td.tarea{grid-area:tarea;font-size:14px;line-height:1.3}
-  .tabla td.det{grid-area:det;font-size:12.5px}
-  .tabla td.sup{grid-area:sup;font-size:12px;color:var(--text3)}
-  .tabla td.sup br{display:none}
-  .tabla td.sup .coma{display:inline}
-  .tabla td.obs{grid-area:obs;font-size:12.5px;color:var(--text);background:#FAF9F6;border:1px solid #EFECE6;border-radius:9px;padding:.45rem .6rem}
+  /* Tabla de 3 columnas: Hora, Tarea y un punto con el color del estado.
+     Al tocar la fila se despliega abajo el detalle, los supervisores y las observaciones */
+  .tabla-card{padding:.5rem}
+  .tabla td{padding:.55rem .5rem}
+  .tabla td.det,.tabla td.sup,.tabla td.obs{display:none}
+  .tabla td.marca{box-shadow:inset 5px 0 0 var(--c);padding-left:calc(.5rem + 5px)}
+  .tabla td.hora{font-size:12.5px}
+  .tabla td.tarea{min-width:0;font-size:13px;text-align:left}
+  .tabla td.estc{width:1%}
+  .tabla td.estc .est{font-size:0;gap:0;padding:0;background:none}
+  .tabla td.estc .est::before{width:11px;height:11px}
+  .tabla tr.con-extra td.tarea{cursor:pointer}
+  .tabla tr.con-extra .ab{display:inline-block;margin-left:7px;vertical-align:1px;fill:none;stroke:var(--text3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+  .tabla tr.abierta .ab{transform:rotate(180deg)}
+  .tabla tr.abierta .extra{display:flex}
+  .extra{flex-direction:column;gap:5px;margin-top:7px;font-weight:400;font-size:12.5px;color:var(--text2);white-space:pre-line}
+  .extra .x-sup{font-size:12px;color:var(--text3)}
+  .extra .x-est{font-size:12px;font-weight:700;color:var(--c)}
+  .extra .x-obs{color:var(--text);background:#FAF9F6;border:1px solid #EFECE6;border-radius:8px;padding:.4rem .55rem}
 }
 </style>
 </head>
@@ -233,11 +232,19 @@ function dibujarTabla(v) {
     const etiquetaEstado = f.estado
       ? `<span class="est" style="--c:${e ? e.c : 'var(--gris)'};--bc:${e ? e.bc : 'var(--gris-bg)'}">${escapar(f.estado)}</span>`
       : '';
-    html += `<tr class="fila" style="--c:var(--${f.color})">
+    // Lo que en el celular se despliega al tocar la fila
+    const detalle = f.detalle === '-' ? '' : f.detalle;
+    const extra = [
+      f.estado && `<span class="x-est" style="--c:${e ? e.c : 'var(--gris)'}">${escapar(f.estado)}</span>`,
+      detalle && `<span>${escapar(detalle)}</span>`,
+      f.supervisor && `<span class="x-sup">${escapar(f.supervisor)}</span>`,
+      f.observaciones && `<span class="x-obs">${escapar(f.observaciones)}</span>`,
+    ].filter(Boolean).join('');
+    html += `<tr class="fila${extra ? ' con-extra' : ''}" style="--c:var(--${f.color})">
       <td class="corta hora marca">${escapar(f.horario)}</td>
-      <td class="tarea">${escapar(f.tarea)}</td>
-      <td class="texto det">${escapar(f.detalle === '-' ? '' : f.detalle)}</td>
-      <td class="corta sup">${escapar(f.supervisor).replace(/, /g, '<span class="coma">, </span><br>')}</td>
+      <td class="tarea">${escapar(f.tarea)}${extra ? `<svg class="ab" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4"/></svg><div class="extra">${extra}</div>` : ''}</td>
+      <td class="texto det">${escapar(detalle)}</td>
+      <td class="corta sup">${escapar(f.supervisor).replace(/, /g, '<br>')}</td>
       <td class="corta estc">${etiquetaEstado}</td>
       <td class="texto obs">${escapar(f.observaciones)}</td>
     </tr>`;
@@ -273,6 +280,13 @@ async function cargar(fecha) {
     mostrarCarga('No se pudo leer la planilla.', true);
   }
 }
+
+// En el celular, tocar una fila despliega o pliega su información
+const celular = matchMedia('(max-width:760px)');
+$('contenido').addEventListener('click', e => {
+  const fila = e.target.closest('tr.con-extra');
+  if (fila && celular.matches) fila.classList.toggle('abierta');
+});
 
 function cerrarDias() {
   $('dias').hidden = true;
