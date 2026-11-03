@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis servicios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F6F3;
+  --surface:#FFFFFF;
+  --border:#E2DED6;
+  --text:#1A1714;
+  --text2:#6B6560;
+  --text3:#9E9890;
+  --violeta:#B4A7D6;
+  --azul:#A4C2F4;
+  --naranja:#F9CB9C;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px 'DM Sans',system-ui,sans-serif;min-height:100vh}
+.barra{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.barra h1{margin:0;font-size:16px;font-weight:700;flex:1}
+select{font:600 13px 'DM Sans',system-ui,sans-serif;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer}
+main{padding:16px}
+.aviso{color:var(--text3);padding:24px 4px}
+.tabla{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+table{border-collapse:collapse;width:100%}
+th,td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+th{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;background:#FBFAF8;white-space:nowrap}
+td.ajustado,th.ajustado{width:1%;white-space:nowrap}
+td.marca{width:6px;padding:0;border-bottom-color:transparent}
+tr.turno td{background:#F1EFEA;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2)}
+tbody tr:last-child td{border-bottom:none}
+.detalle,.obs{color:var(--text2)}
+.realizado{color:#39745E;font-weight:600}
+.proceso{color:#D2691E;font-weight:600}
+.pendiente{color:#B3261E;font-weight:600}
+</style>
+</head>
+<body>
+<div class="barra">
+  <h1>Mis servicios</h1>
+  <select id="fecha" aria-label="Día"></select>
+</div>
+<main id="contenido"><div class="aviso">Cargando…</div></main>
+
+<script>
+// Aplicación web del Apps Script de la planilla (ver apps-script/Codigo.gs)
+const API_URL = 'PEGAR_URL_DE_LA_APLICACION_WEB';
+
+const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const selector = document.getElementById('fecha');
+const contenido = document.getElementById('contenido');
+
+function etiqueta(id) {
+  const d = +id.slice(0, 2), m = +id.slice(2);
+  return `${DIAS[new Date(2026, m - 1, d).getDay()]} ${id.slice(0, 2)}/${id.slice(2)}`;
+}
+
+function escapar(s) {
+  return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function claseEstado(estado) {
+  const e = estado.toLowerCase();
+  if (e === 'realizado') return 'realizado';
+  if (e === 'en proceso') return 'proceso';
+  if (e === 'pendiente') return 'pendiente';
+  return '';
+}
+
+function llenarSelector(fechas, elegida) {
+  const ids = fechas.map(f => f.id);
+  if (!ids.includes(elegida)) ids.unshift(elegida);
+  selector.innerHTML = ids.map(id => `<option value="${id}">${etiqueta(id)}</option>`).join('');
+  selector.value = elegida;
+}
+
+function dibujar(datos) {
+  if (datos.error) { contenido.innerHTML = `<div class="aviso">${escapar(datos.error)}</div>`; return; }
+  if (!datos.filas.length) { contenido.innerHTML = '<div class="aviso">Sin tareas de mis servicios este día.</div>'; return; }
+
+  let turno = null, html = '';
+  for (const f of datos.filas) {
+    if (f.turno !== turno) {
+      turno = f.turno;
+      html += `<tr class="turno"><td class="marca"></td><td colspan="6">${escapar(turno)}</td></tr>`;
+    }
+    html += `<tr>
+      <td class="marca" style="background:var(--${f.color})"></td>
+      <td class="ajustado">${escapar(f.horario)}</td>
+      <td>${escapar(f.tarea)}</td>
+      <td class="detalle">${escapar(f.detalle)}</td>
+      <td class="ajustado">${escapar(f.supervisor)}</td>
+      <td class="ajustado ${claseEstado(f.estado)}">${escapar(f.estado)}</td>
+      <td class="obs">${escapar(f.observaciones)}</td>
+    </tr>`;
+  }
+  contenido.innerHTML = `<div class="tabla"><table>
+    <thead><tr><th class="marca"></th><th class="ajustado">Horario</th><th>Tarea</th><th>Detalle</th>
+      <th class="ajustado">Supervisor</th><th class="ajustado">Estado</th><th>Observaciones</th></tr></thead>
+    <tbody>${html}</tbody></table></div>`;
+}
+
+async function cargar(fecha) {
+  contenido.innerHTML = '<div class="aviso">Cargando…</div>';
+  try {
+    const url = API_URL + (fecha ? `?fecha=${fecha}` : '');
+    const datos = await (await fetch(url)).json();
+    llenarSelector(datos.fechas, datos.fecha);
+    dibujar(datos);
+  } catch (err) {
+    contenido.innerHTML = '<div class="aviso">No se pudo leer la planilla.</div>';
+  }
+}
+
+selector.addEventListener('change', () => cargar(selector.value));
+cargar(); // sin fecha: el Apps Script devuelve hoy
+</script>
+</body>
+</html>
