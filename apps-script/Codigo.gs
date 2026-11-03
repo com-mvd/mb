@@ -1,5 +1,5 @@
 /**
- * Aplicación web de la planilla TAREAS SUPERVISION 2026.
+ * Aplicación web que lee la planilla TAREAS SUPERVISION 2026.
  * Devuelve las filas violetas, azules y naranjas de la hoja de un día.
  *
  *   GET ?fecha=0311   → filas de la hoja 03/11
@@ -15,9 +15,11 @@ const COLORES = {
   '#f9cb9c': 'naranja',
 };
 const ZONA = 'America/Montevideo';
+// Proyecto independiente (no ligado a la planilla): desde la planilla el editor no abre.
+const PLANILLA = '1H_6i-89kIRAc0GAVM42eNTC6uSLIiLSMdiKVzf44fbo';
 
 function doGet(e) {
-  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  const libro = SpreadsheetApp.openById(PLANILLA);
   const fechas = listarFechas_(libro);
   const pedida = (e && e.parameter && e.parameter.fecha) ||
     Utilities.formatDate(new Date(), ZONA, 'ddMM');

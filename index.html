@@ -33,7 +33,7 @@ td.ajustado,th.ajustado{width:1%;white-space:nowrap}
 td.marca{width:6px;padding:0;border-bottom-color:transparent}
 tr.turno td{background:#F1EFEA;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2)}
 tbody tr:last-child td{border-bottom:none}
-.detalle,.obs{color:var(--text2)}
+.detalle,.obs{color:var(--text2);white-space:pre-line}
 .realizado{color:#39745E;font-weight:600}
 .proceso{color:#D2691E;font-weight:600}
 .pendiente{color:#B3261E;font-weight:600}
@@ -48,7 +48,7 @@ tbody tr:last-child td{border-bottom:none}
 
 <script>
 // Aplicación web del Apps Script de la planilla (ver apps-script/Codigo.gs)
-const API_URL = 'PEGAR_URL_DE_LA_APLICACION_WEB';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwKx3Bo1V_IcMkGFb1MWEcwH9bEZI2NH4Topb7CeSdPZDaBrfzUurav2O5g2A2Orkl6/exec';
 
 const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const selector = document.getElementById('fecha');
