@@ -42,6 +42,9 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 /* En el iPhone abierto desde el inicio, el azul sigue detrás de la hora pero el título baja debajo de ella
    (en Safari y en la PC env() vale 0 y no cambia nada) */
 .barra{padding-top:env(safe-area-inset-top,0px)}
+/* Franja fija azul detrás de la hora: con un elemento fijo arriba iOS no difumina esa zona.
+   Mide lo mismo que la zona de la hora, así que en la PC y en Safari no se ve (alto 0) */
+.zona-hora{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0f172a;z-index:3000;pointer-events:none}
 .barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
 .titulo h1{font-family:'Segoe UI',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
 
@@ -138,6 +141,7 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+<div class="zona-hora" aria-hidden="true"></div>
 <header class="barra">
   <div class="barra-in">
     <div class="titulo"><h1>Servicios MB</h1></div>
