@@ -103,11 +103,12 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .vacio{text-align:center;color:var(--text2);font-size:14px;font-weight:600;padding:2.5rem 1rem}
 
 @media (max-width:760px){
-  /* En el celular la barra va sin título: solo el azul detrás de la hora y un poco más,
-     lo que tapa el difuminado que pone iOS al abrir desde el ícono */
-  .barra-in{min-height:24px;padding:0}
+  /* En el celular la barra va sin título y mide solo la zona de la hora (0 en Safari).
+     iOS difumina esa franja al abrir desde el ícono: sin texto debajo no se nota */
+  .barra{box-shadow:none}
+  .barra-in{min-height:0;padding:0}
   .titulo{display:none}
-  .carga{min-height:max(260px,calc(100vh - 24px))}
+  .carga{min-height:max(260px,100vh)}
   .wrap{padding:1rem 12px 2rem}
 
   /* Barra: la fecha a lo ancho arriba, abajo un renglón de servicios y otro de estados */
