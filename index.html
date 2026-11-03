@@ -22,11 +22,13 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-/* Fondo azul detrás de todo: Safari lo usa para la zona de la hora (el body tiene su propio fondo claro) */
+/* El body va azul porque Safari (iOS 26+) pinta la zona de la hora con su color de fondo;
+   el fondo claro de la página lo lleva .fondo, debajo del título */
 html{overflow-y:scroll;scrollbar-gutter:stable;background:#0f172a}
 body{font-family:'DM Sans',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;
-  background:radial-gradient(circle at 12% 0%,#EDEEF9 0%,transparent 40%),radial-gradient(circle at 95% 100%,#E7F3EE 0%,transparent 40%),var(--bg);
-  background-attachment:fixed;min-height:100vh}
+  background:#0f172a;min-height:100vh;display:flex;flex-direction:column}
+.fondo{flex:1;background:radial-gradient(circle at 12% 0%,#EDEEF9 0%,transparent 40%),radial-gradient(circle at 95% 100%,#E7F3EE 0%,transparent 40%),var(--bg);
+  background-attachment:fixed}
 button,select{font:inherit;color:inherit;cursor:pointer}
 .num{font-variant-numeric:tabular-nums}
 .wrap{max-width:1440px;margin:0 auto;padding:1.5rem clamp(16px,2.5vw,2rem) 3rem}
@@ -135,6 +137,7 @@ button,select{font:inherit;color:inherit;cursor:pointer}
   </div>
 </header>
 
+<div class="fondo">
 <div class="carga" id="carga" role="status" aria-live="polite">
   <span class="ruedita" id="ruedita" aria-hidden="true"></span>
   <div class="carga-t" id="cargaT">Cargando información</div>
@@ -150,6 +153,7 @@ button,select{font:inherit;color:inherit;cursor:pointer}
     <div id="filtros" style="display:contents"></div>
   </nav>
   <div class="card tabla-card" id="contenido"></div>
+</div>
 </div>
 <div class="dias" id="dias" role="listbox" hidden></div>
 
