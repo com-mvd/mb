@@ -2,57 +2,141 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mis servicios</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COM</title>
+<link rel="icon" type="image/png" href="assets/logo-ciemsa.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F7F6F3;
-  --surface:#FFFFFF;
-  --border:#E2DED6;
-  --text:#1A1714;
-  --text2:#6B6560;
-  --text3:#9E9890;
-  --violeta:#B4A7D6;
-  --azul:#A4C2F4;
-  --naranja:#F9CB9C;
+  --bg:#F7F6F3; --card:#FFFFFF; --border:#E6E2DA;
+  --text:#1A1714; --text2:#5F5A54; --text3:#9A948C;
+  --pend:#eb6834; --pend-bg:#FCE9DF;
+  --atr:#d03b3b;  --atr-bg:#F9E1E0;
+  --hecho:#1baf7a;--hecho-bg:#DDF3EA;
+  --gris:#B5AFA6; --gris-bg:#F0EDE7;
+  /* Colores de las filas en la planilla */
+  --violeta:#B4A7D6; --azul:#A4C2F4; --naranja:#F9CB9C;
+  --shadow:0 4px 20px rgba(26,23,20,.05),0 1px 3px rgba(26,23,20,.05);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px 'DM Sans',system-ui,sans-serif;min-height:100vh}
-.barra{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
-.barra h1{margin:0;font-size:16px;font-weight:700;flex:1}
-select{font:600 13px 'DM Sans',system-ui,sans-serif;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer}
-main{padding:16px}
-.aviso{color:var(--text3);padding:24px 4px}
-.tabla{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px}
-table{border-collapse:collapse;width:100%}
-th,td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
-th{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;background:#FBFAF8;white-space:nowrap}
-td.ajustado,th.ajustado{width:1%;white-space:nowrap}
-td.marca{width:6px;padding:0;border-bottom-color:transparent}
-tr.turno td{background:#F1EFEA;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2)}
-tbody tr:last-child td{border-bottom:none}
-.detalle,.obs{color:var(--text2);white-space:pre-line}
-.realizado{color:#39745E;font-weight:600}
-.proceso{color:#D2691E;font-weight:600}
-.pendiente{color:#B3261E;font-weight:600}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(circle at 12% 0%,#EDEEF9 0%,transparent 40%),radial-gradient(circle at 95% 100%,#E7F3EE 0%,transparent 40%),var(--bg);
+  background-attachment:fixed;min-height:100vh}
+button,select{font:inherit;color:inherit;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1440px;margin:0 auto;padding:1.5rem clamp(16px,2.5vw,2rem) 3rem}
+
+/* Barra del título: igual a la de los dashboards de com-mvd */
+.barra{position:sticky;top:0;z-index:1200;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
+.titulo{display:flex;align-items:center;gap:10px}
+.titulo .ico{display:flex;align-items:center;justify-content:center;width:32px;height:32px;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;font-size:26px;line-height:32px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+.titulo h1{font-family:'Segoe UI',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+
+/* Día y servicios */
+.ctrl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.seg{display:inline-flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:3px;box-shadow:var(--shadow)}
+.seg button{border:0;background:transparent;border-radius:8px;width:32px;height:30px;font-size:16px;font-weight:700;color:var(--text2)}
+.seg button:hover:not(:disabled){background:var(--gris-bg)}
+.seg button:disabled{opacity:.3;cursor:default}
+.seg select{border:0;background:transparent;font-size:14px;font-weight:700;color:var(--text);padding:0 6px;outline:none;text-align:center}
+.tg{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;color:var(--text2);box-shadow:var(--shadow)}
+.tg i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.tg b{color:var(--text)}
+.tg.off{opacity:.42}
+.tg.off i{background:transparent;box-shadow:inset 0 0 0 2px var(--c)}
+
+/* Indicadores */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{padding:.9rem 1rem;text-align:center;border-top:4px solid var(--c)}
+.kpi-n{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.kpi-t{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+.kpi-p{font-size:12px;font-weight:600;color:var(--text2);margin-top:2px}
+
+/* Pestañas de turno (mismo azul que la barra del título) */
+.cats{display:flex;justify-content:center;gap:6px;padding:6px;margin-bottom:14px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);box-shadow:0 4px 12px rgba(15,23,42,.25);overflow-x:auto;scrollbar-width:none}
+.cats button{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:#c7d5ea;font-size:13.5px;font-weight:600;padding:9px 18px;border-radius:10px;white-space:nowrap}
+.cats button:hover{background:rgba(255,255,255,.08);color:#fff}
+.cats button.on{background:#fff;color:#0f172a;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.cats small{font-size:12px;opacity:.7}
+
+/* Tabla cerrada tipo planilla: todo centrado; las columnas cortas miden lo justo */
+.tabla-card{padding:1rem}
+.tabla-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+.tabla{width:100%;border-collapse:collapse;font-size:13px}
+.tabla th{font-size:10.5px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em;text-align:center;padding:.6rem .7rem;background:#F7F6F3;border:1px solid var(--border);white-space:nowrap}
+.tabla td{padding:.55rem .7rem;border:1px solid #ECE9E3;vertical-align:middle;text-align:center;color:var(--text2);line-height:1.35}
+.tabla tr>:first-child{border-left:0}
+.tabla tr>:last-child{border-right:0}
+.tabla thead th{border-top:0}
+.tabla tbody tr:last-child td{border-bottom:0}
+.tabla .corta{width:1%;white-space:nowrap}
+.tabla td.hora{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+/* La marca del servicio va a la izquierda de la fila */
+.tabla td.marca{border-left:6px solid var(--c)}
+.tabla td.tarea{font-weight:700;color:var(--text);min-width:150px}
+.tabla td.texto{white-space:pre-line;min-width:160px}
+.tabla tr.turno td{background:#F3F4F8;color:#1b3f74;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.45rem .7rem;border-left:0}
+.est{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--bc);color:var(--c);white-space:nowrap}
+.est::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.vacio{text-align:center;color:var(--text2);font-size:14px;font-weight:600;padding:2.5rem 1rem}
+
+@media (max-width:760px){
+  .barra-in{padding:10px 16px;min-height:64px}
+  .titulo h1{font-size:21px}
+  .titulo .ico{width:26px;height:26px;font-size:21px;line-height:26px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cats{justify-content:flex-start}
+  .tabla-card{padding:.6rem}
+}
 </style>
 </head>
 <body>
-<div class="barra">
-  <h1>Mis servicios</h1>
-  <select id="fecha" aria-label="Día"></select>
+<header class="barra">
+  <div class="barra-in">
+    <div class="titulo"><span class="ico" aria-hidden="true">♻</span><h1>Mis servicios</h1></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="ctrl">
+    <div class="seg">
+      <button id="ant" aria-label="Día anterior">‹</button>
+      <select id="fecha" aria-label="Día"></select>
+      <button id="sig" aria-label="Día siguiente">›</button>
+    </div>
+    <div id="servicios" style="display:contents"></div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <nav class="cats" id="turnos"></nav>
+  <div class="card tabla-card"><div id="contenido"><div class="vacio">Cargando…</div></div></div>
 </div>
-<main id="contenido"><div class="aviso">Cargando…</div></main>
 
 <script>
-// Aplicación web del Apps Script de la planilla (ver apps-script/Codigo.gs)
+// Aplicación web del Apps Script que lee la planilla (ver apps-script/Codigo.gs)
 const API_URL = 'https://script.google.com/macros/s/AKfycbwKx3Bo1V_IcMkGFb1MWEcwH9bEZI2NH4Topb7CeSdPZDaBrfzUurav2O5g2A2Orkl6/exec';
 
-const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-const selector = document.getElementById('fecha');
-const contenido = document.getElementById('contenido');
+const SERVICIOS = [
+  { color: 'violeta', nombre: 'Tareas especiales' },
+  { color: 'azul',    nombre: 'Agenda' },
+  { color: 'naranja', nombre: 'Bolsones' },
+];
+const TURNOS = ['NOCTURNO', 'MATUTINO', 'VESPERTINO'];
+const ESTADOS = {
+  'realizado':  { c: 'var(--hecho)', bc: 'var(--hecho-bg)' },
+  'en proceso': { c: 'var(--pend)',  bc: 'var(--pend-bg)' },
+  'pendiente':  { c: 'var(--atr)',   bc: 'var(--atr-bg)' },
+};
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+const $ = id => document.getElementById(id);
+let filas = [];
+let apagados = new Set();  // servicios ocultos
+let turno = 'TODOS';
 
 function etiqueta(id) {
   const d = +id.slice(0, 2), m = +id.slice(2);
@@ -63,60 +147,118 @@ function escapar(s) {
   return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 }
 
-function claseEstado(estado) {
-  const e = estado.toLowerCase();
-  if (e === 'realizado') return 'realizado';
-  if (e === 'en proceso') return 'proceso';
-  if (e === 'pendiente') return 'pendiente';
-  return '';
-}
-
 function llenarSelector(fechas, elegida) {
   const ids = fechas.map(f => f.id);
   if (!ids.includes(elegida)) ids.unshift(elegida);
-  selector.innerHTML = ids.map(id => `<option value="${id}">${etiqueta(id)}</option>`).join('');
-  selector.value = elegida;
+  $('fecha').innerHTML = ids.map(id => `<option value="${id}">${etiqueta(id)}</option>`).join('');
+  $('fecha').value = elegida;
+  // Las fechas vienen de la más nueva a la más vieja
+  const i = $('fecha').selectedIndex;
+  $('sig').disabled = i <= 0;
+  $('ant').disabled = i >= ids.length - 1;
 }
 
-function dibujar(datos) {
-  if (datos.error) { contenido.innerHTML = `<div class="aviso">${escapar(datos.error)}</div>`; return; }
-  if (!datos.filas.length) { contenido.innerHTML = '<div class="aviso">Sin tareas de mis servicios este día.</div>'; return; }
+function dibujarServicios() {
+  $('servicios').innerHTML = SERVICIOS.map(s => {
+    const n = filas.filter(f => f.color === s.color).length;
+    return `<button class="tg${apagados.has(s.color) ? ' off' : ''}" data-color="${s.color}" style="--c:var(--${s.color})">
+      <i></i>${s.nombre} <b class="num">${n}</b></button>`;
+  }).join('');
+}
 
-  let turno = null, html = '';
-  for (const f of datos.filas) {
-    if (f.turno !== turno) {
-      turno = f.turno;
-      html += `<tr class="turno"><td class="marca"></td><td colspan="6">${escapar(turno)}</td></tr>`;
+function visibles() {
+  return filas.filter(f => !apagados.has(f.color));
+}
+
+function dibujarKpis() {
+  const v = visibles();
+  const cuenta = e => v.filter(f => f.estado.toLowerCase() === e).length;
+  const hechas = cuenta('realizado');
+  const enProceso = cuenta('en proceso');
+  const faltan = v.length - hechas - enProceso;
+  const pct = n => v.length ? Math.round(n * 100 / v.length) + '%' : '–';
+  const kpi = (n, t, c, p) => `<div class="card kpi" style="--c:${c}">
+    <div class="kpi-n num">${n}</div><div class="kpi-t">${t}</div>${p ? `<div class="kpi-p num">${p}</div>` : ''}</div>`;
+  $('kpis').innerHTML =
+    kpi(v.length, 'Tareas', '#1b3f74') +
+    kpi(hechas, 'Realizadas', 'var(--hecho)', pct(hechas)) +
+    kpi(enProceso, 'En proceso', 'var(--pend)', pct(enProceso)) +
+    kpi(faltan, 'Sin realizar', 'var(--atr)', pct(faltan));
+}
+
+function dibujarTurnos() {
+  const v = visibles();
+  const boton = (id, nombre, n) =>
+    `<button class="${turno === id ? 'on' : ''}" data-turno="${id}">${nombre} <small class="num">${n}</small></button>`;
+  $('turnos').innerHTML = boton('TODOS', 'Todos', v.length) + TURNOS.map(t =>
+    boton(t, t[0] + t.slice(1).toLowerCase(), v.filter(f => f.turno.toUpperCase() === t).length)).join('');
+}
+
+function dibujarTabla() {
+  const v = visibles().filter(f => turno === 'TODOS' || f.turno.toUpperCase() === turno);
+  if (!v.length) { $('contenido').innerHTML = '<div class="vacio">Sin tareas.</div>'; return; }
+
+  let actual = null, html = '';
+  for (const f of v) {
+    if (turno === 'TODOS' && f.turno !== actual) {
+      actual = f.turno;
+      html += `<tr class="turno"><td colspan="6">Turno ${escapar(actual.toLowerCase())}</td></tr>`;
     }
+    const e = ESTADOS[f.estado.toLowerCase()];
+    const estado = f.estado
+      ? `<span class="est" style="--c:${e ? e.c : 'var(--gris)'};--bc:${e ? e.bc : 'var(--gris-bg)'}">${escapar(f.estado)}</span>`
+      : '';
     html += `<tr>
-      <td class="marca" style="background:var(--${f.color})"></td>
-      <td class="ajustado">${escapar(f.horario)}</td>
-      <td>${escapar(f.tarea)}</td>
-      <td class="detalle">${escapar(f.detalle)}</td>
-      <td class="ajustado">${escapar(f.supervisor)}</td>
-      <td class="ajustado ${claseEstado(f.estado)}">${escapar(f.estado)}</td>
-      <td class="obs">${escapar(f.observaciones)}</td>
+      <td class="corta hora marca" style="--c:var(--${f.color})">${escapar(f.horario)}</td>
+      <td class="tarea">${escapar(f.tarea)}</td>
+      <td class="texto">${escapar(f.detalle === '-' ? '' : f.detalle)}</td>
+      <td class="corta">${escapar(f.supervisor).replace(/, /g, '<br>')}</td>
+      <td class="corta">${estado}</td>
+      <td class="texto">${escapar(f.observaciones)}</td>
     </tr>`;
   }
-  contenido.innerHTML = `<div class="tabla"><table>
-    <thead><tr><th class="marca"></th><th class="ajustado">Horario</th><th>Tarea</th><th>Detalle</th>
-      <th class="ajustado">Supervisor</th><th class="ajustado">Estado</th><th>Observaciones</th></tr></thead>
+  $('contenido').innerHTML = `<div class="tabla-wrap"><table class="tabla">
+    <thead><tr><th class="corta">Horario</th><th>Tarea</th><th>Detalle</th><th class="corta">Supervisor</th>
+      <th class="corta">Estado</th><th>Observaciones</th></tr></thead>
     <tbody>${html}</tbody></table></div>`;
 }
 
+function dibujar() {
+  dibujarServicios();
+  dibujarKpis();
+  dibujarTurnos();
+  dibujarTabla();
+}
+
 async function cargar(fecha) {
-  contenido.innerHTML = '<div class="aviso">Cargando…</div>';
+  $('contenido').innerHTML = '<div class="vacio">Cargando…</div>';
   try {
-    const url = API_URL + (fecha ? `?fecha=${fecha}` : '');
-    const datos = await (await fetch(url)).json();
+    const datos = await (await fetch(API_URL + (fecha ? `?fecha=${fecha}` : ''))).json();
     llenarSelector(datos.fechas, datos.fecha);
-    dibujar(datos);
+    filas = datos.filas;
+    dibujar();
+    if (datos.error) $('contenido').innerHTML = `<div class="vacio">${escapar(datos.error)}</div>`;
   } catch (err) {
-    contenido.innerHTML = '<div class="aviso">No se pudo leer la planilla.</div>';
+    $('contenido').innerHTML = '<div class="vacio">No se pudo leer la planilla.</div>';
   }
 }
 
-selector.addEventListener('change', () => cargar(selector.value));
+$('fecha').addEventListener('change', () => cargar($('fecha').value));
+$('ant').addEventListener('click', () => { $('fecha').selectedIndex++; cargar($('fecha').value); });
+$('sig').addEventListener('click', () => { $('fecha').selectedIndex--; cargar($('fecha').value); });
+$('servicios').addEventListener('click', e => {
+  const b = e.target.closest('[data-color]');
+  if (!b) return;
+  apagados.has(b.dataset.color) ? apagados.delete(b.dataset.color) : apagados.add(b.dataset.color);
+  dibujar();
+});
+$('turnos').addEventListener('click', e => {
+  const b = e.target.closest('[data-turno]');
+  if (!b) return;
+  turno = b.dataset.turno;
+  dibujarTurnos();
+  dibujarTabla();
+});
 cargar(); // sin fecha: el Apps Script devuelve hoy
 </script>
 </body>
