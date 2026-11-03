@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- En el celular, la zona de la hora y la batería va del azul de la barra -->
+<meta name="theme-color" content="#0f172a">
 <title>MB</title>
 <link rel="icon" type="image/png" href="assets/logo-ciemsa.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -20,7 +22,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
-html{overflow-y:scroll;scrollbar-gutter:stable}
+/* Fondo azul detrás de todo: Safari lo usa para la zona de la hora (el body tiene su propio fondo claro) */
+html{overflow-y:scroll;scrollbar-gutter:stable;background:#0f172a}
 body{font-family:'DM Sans',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;
   background:radial-gradient(circle at 12% 0%,#EDEEF9 0%,transparent 40%),radial-gradient(circle at 95% 100%,#E7F3EE 0%,transparent 40%),var(--bg);
   background-attachment:fixed;min-height:100vh}
@@ -121,7 +124,6 @@ button,select{font:inherit;color:inherit;cursor:pointer}
   .tabla tr.abierta .extra{display:flex}
   .extra{flex-direction:column;gap:5px;margin-top:7px;font-weight:400;font-size:12.5px;color:var(--text2);white-space:pre-line}
   .extra .x-sup{font-size:12px;color:var(--text3)}
-  .extra .x-est{font-size:12px;font-weight:700;color:var(--c)}
   .extra .x-obs{color:var(--text);background:#FAF9F6;border:1px solid #EFECE6;border-radius:8px;padding:.4rem .55rem}
 }
 </style>
@@ -235,7 +237,6 @@ function dibujarTabla(v) {
     // Lo que en el celular se despliega al tocar la fila
     const detalle = f.detalle === '-' ? '' : f.detalle;
     const extra = [
-      f.estado && `<span class="x-est" style="--c:${e ? e.c : 'var(--gris)'}">${escapar(f.estado)}</span>`,
       detalle && `<span>${escapar(detalle)}</span>`,
       f.supervisor && `<span class="x-sup">${escapar(f.supervisor)}</span>`,
       f.observaciones && `<span class="x-obs">${escapar(f.observaciones)}</span>`,
