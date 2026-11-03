@@ -6,7 +6,8 @@
      la barra baja su contenido con env(safe-area-inset-top) para que el título no quede en el difuminado de iOS -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- "black": zona de la hora opaca y la página empieza debajo (prueba para que iOS no difumine el título) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <!-- En el celular, la zona de la hora y la batería va del azul de la barra -->
 <meta name="theme-color" content="#0f172a">
 <title>MB</title>
@@ -41,12 +42,7 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .barra{background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 /* En el iPhone abierto desde el inicio, el azul sigue detrás de la hora pero el título baja debajo de ella
    (en Safari y en la PC env() vale 0 y no cambia nada) */
-.barra{padding-top:env(safe-area-inset-top,0px)}
-/* Abierta desde el ícono, iOS difumina más que la zona de la hora: el título baja un poco más.
-   La clase .app la pone el script solo en ese modo */
-.app .barra{padding-top:calc(env(safe-area-inset-top,0px) + 34px)}
-.app .barra-in{min-height:0;padding-top:0;padding-bottom:14px}
-/* Franja fija azul detrás de la hora: con un elemento fijo arriba iOS no difumina esa zona.
+.barra{padding-top:env(safe-area-inset-top,0px)}/* Franja fija azul detrás de la hora: con un elemento fijo arriba iOS no difumina esa zona.
    Mide lo mismo que la zona de la hora, así que en la PC y en Safari no se ve (alto 0) */
 .zona-hora{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0f172a;z-index:3000;pointer-events:none}
 .barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
@@ -196,10 +192,6 @@ const FILTRO_ESTADOS = [
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 const $ = id => document.getElementById(id);
-// Abierta como app desde la pantalla de inicio del iPhone
-if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
-  document.documentElement.classList.add('app');
-}
 let filas = [];
 let servicio = 'TODOS';
 let estado = 'TODOS';
