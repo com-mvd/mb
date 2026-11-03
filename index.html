@@ -42,6 +42,9 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 /* En el iPhone abierto desde el inicio, el azul sigue detrás de la hora pero el título baja debajo de ella
    (en Safari y en la PC env() vale 0 y no cambia nada) */
 .barra{padding-top:env(safe-area-inset-top,0px)}
+/* Abierta desde el ícono, iOS difumina más que la zona de la hora: el título baja un poco más.
+   La clase .app la pone el script solo en ese modo */
+.app .barra{padding-top:calc(env(safe-area-inset-top,0px) + 36px)}
 /* Franja fija azul detrás de la hora: con un elemento fijo arriba iOS no difumina esa zona.
    Mide lo mismo que la zona de la hora, así que en la PC y en Safari no se ve (alto 0) */
 .zona-hora{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0f172a;z-index:3000;pointer-events:none}
@@ -192,6 +195,10 @@ const FILTRO_ESTADOS = [
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 const $ = id => document.getElementById(id);
+// Abierta como app desde la pantalla de inicio del iPhone
+if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
+  document.documentElement.classList.add('app');
+}
 let filas = [];
 let servicio = 'TODOS';
 let estado = 'TODOS';
