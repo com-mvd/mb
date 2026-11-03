@@ -32,30 +32,17 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .barra{position:sticky;top:0;z-index:1200;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
 .titulo{display:flex;align-items:center;gap:10px}
-.titulo .ico{display:flex;align-items:center;justify-content:center;width:32px;height:32px;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif;font-size:26px;line-height:32px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
 .titulo h1{font-family:'Segoe UI',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
 
-/* Día y servicios */
-.ctrl{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.seg{display:inline-flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:3px;box-shadow:var(--shadow)}
-.seg button{border:0;background:transparent;border-radius:8px;width:32px;height:30px;font-size:16px;font-weight:700;color:var(--text2)}
-.seg button:hover:not(:disabled){background:var(--gris-bg)}
-.seg button:disabled{opacity:.3;cursor:default}
-.seg select{border:0;background:transparent;font-size:14px;font-weight:700;color:var(--text);padding:0 6px;outline:none;text-align:center}
-.tg{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;color:var(--text2);box-shadow:var(--shadow)}
-.tg i{width:10px;height:10px;border-radius:50%;background:var(--c)}
-.tg b{color:var(--text)}
-.tg.off{opacity:.42}
-.tg.off i{background:transparent;box-shadow:inset 0 0 0 2px var(--c)}
-
-/* Indicadores */
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
-.kpi{padding:.9rem 1rem;text-align:center;border-top:4px solid var(--c)}
+/* Día + indicadores en una fila */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.kpi{padding:.9rem 1rem;text-align:center;border-top:4px solid var(--c);display:flex;flex-direction:column;justify-content:center}
 .kpi-n{font-size:30px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
 .kpi-t{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
-.kpi-p{font-size:12px;font-weight:600;color:var(--text2);margin-top:2px}
+.dia{cursor:pointer}
+.dia select{border:0;background:transparent;font-size:20px;font-weight:700;color:var(--text);text-align:center;text-align-last:center;outline:none;width:100%;line-height:33px}
 
 /* Pestañas de turno (mismo azul que la barra del título) */
 .cats{display:flex;justify-content:center;gap:6px;padding:6px;margin-bottom:14px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);box-shadow:0 4px 12px rgba(15,23,42,.25);overflow-x:auto;scrollbar-width:none}
@@ -88,8 +75,8 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 @media (max-width:760px){
   .barra-in{padding:10px 16px;min-height:64px}
   .titulo h1{font-size:21px}
-  .titulo .ico{width:26px;height:26px;font-size:21px;line-height:26px}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dia{grid-column:1/-1}
   .cats{justify-content:flex-start}
   .tabla-card{padding:.6rem}
 }
@@ -98,20 +85,18 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 <body>
 <header class="barra">
   <div class="barra-in">
-    <div class="titulo"><span class="ico" aria-hidden="true">♻</span><h1>Mis servicios</h1></div>
+    <div class="titulo"><h1>Servicios MB</h1></div>
   </div>
 </header>
 
 <div class="wrap">
-  <div class="ctrl">
-    <div class="seg">
-      <button id="ant" aria-label="Día anterior">‹</button>
+  <div class="kpis">
+    <label class="card kpi dia" style="--c:#1b3f74">
       <select id="fecha" aria-label="Día"></select>
-      <button id="sig" aria-label="Día siguiente">›</button>
-    </div>
-    <div id="servicios" style="display:contents"></div>
+      <div class="kpi-t">Día</div>
+    </label>
+    <div id="kpis" style="display:contents"></div>
   </div>
-  <div class="kpis" id="kpis"></div>
   <nav class="cats" id="turnos"></nav>
   <div class="card tabla-card"><div id="contenido"><div class="vacio">Cargando…</div></div></div>
 </div>
@@ -120,11 +105,6 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 // Aplicación web del Apps Script que lee la planilla (ver apps-script/Codigo.gs)
 const API_URL = 'https://script.google.com/macros/s/AKfycbwKx3Bo1V_IcMkGFb1MWEcwH9bEZI2NH4Topb7CeSdPZDaBrfzUurav2O5g2A2Orkl6/exec';
 
-const SERVICIOS = [
-  { color: 'violeta', nombre: 'Tareas especiales' },
-  { color: 'azul',    nombre: 'Agenda' },
-  { color: 'naranja', nombre: 'Bolsones' },
-];
 const TURNOS = ['NOCTURNO', 'MATUTINO', 'VESPERTINO'];
 const ESTADOS = {
   'realizado':  { c: 'var(--hecho)', bc: 'var(--hecho-bg)' },
@@ -135,7 +115,6 @@ const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', '
 
 const $ = id => document.getElementById(id);
 let filas = [];
-let apagados = new Set();  // servicios ocultos
 let turno = 'TODOS';
 
 function etiqueta(id) {
@@ -152,42 +131,23 @@ function llenarSelector(fechas, elegida) {
   if (!ids.includes(elegida)) ids.unshift(elegida);
   $('fecha').innerHTML = ids.map(id => `<option value="${id}">${etiqueta(id)}</option>`).join('');
   $('fecha').value = elegida;
-  // Las fechas vienen de la más nueva a la más vieja
-  const i = $('fecha').selectedIndex;
-  $('sig').disabled = i <= 0;
-  $('ant').disabled = i >= ids.length - 1;
-}
-
-function dibujarServicios() {
-  $('servicios').innerHTML = SERVICIOS.map(s => {
-    const n = filas.filter(f => f.color === s.color).length;
-    return `<button class="tg${apagados.has(s.color) ? ' off' : ''}" data-color="${s.color}" style="--c:var(--${s.color})">
-      <i></i>${s.nombre} <b class="num">${n}</b></button>`;
-  }).join('');
-}
-
-function visibles() {
-  return filas.filter(f => !apagados.has(f.color));
 }
 
 function dibujarKpis() {
-  const v = visibles();
-  const cuenta = e => v.filter(f => f.estado.toLowerCase() === e).length;
+  const cuenta = e => filas.filter(f => f.estado.toLowerCase() === e).length;
   const hechas = cuenta('realizado');
   const enProceso = cuenta('en proceso');
-  const faltan = v.length - hechas - enProceso;
-  const pct = n => v.length ? Math.round(n * 100 / v.length) + '%' : '–';
-  const kpi = (n, t, c, p) => `<div class="card kpi" style="--c:${c}">
-    <div class="kpi-n num">${n}</div><div class="kpi-t">${t}</div>${p ? `<div class="kpi-p num">${p}</div>` : ''}</div>`;
+  const kpi = (n, t, c) => `<div class="card kpi" style="--c:${c}">
+    <div class="kpi-n num">${n}</div><div class="kpi-t">${t}</div></div>`;
   $('kpis').innerHTML =
-    kpi(v.length, 'Tareas', '#1b3f74') +
-    kpi(hechas, 'Realizadas', 'var(--hecho)', pct(hechas)) +
-    kpi(enProceso, 'En proceso', 'var(--pend)', pct(enProceso)) +
-    kpi(faltan, 'Sin realizar', 'var(--atr)', pct(faltan));
+    kpi(filas.length, 'Tareas', '#1b3f74') +
+    kpi(hechas, 'Realizadas', 'var(--hecho)') +
+    kpi(enProceso, 'En proceso', 'var(--pend)') +
+    kpi(filas.length - hechas - enProceso, 'Sin realizar', 'var(--atr)');
 }
 
 function dibujarTurnos() {
-  const v = visibles();
+  const v = filas;
   const boton = (id, nombre, n) =>
     `<button class="${turno === id ? 'on' : ''}" data-turno="${id}">${nombre} <small class="num">${n}</small></button>`;
   $('turnos').innerHTML = boton('TODOS', 'Todos', v.length) + TURNOS.map(t =>
@@ -195,7 +155,7 @@ function dibujarTurnos() {
 }
 
 function dibujarTabla() {
-  const v = visibles().filter(f => turno === 'TODOS' || f.turno.toUpperCase() === turno);
+  const v = filas.filter(f => turno === 'TODOS' || f.turno.toUpperCase() === turno);
   if (!v.length) { $('contenido').innerHTML = '<div class="vacio">Sin tareas.</div>'; return; }
 
   let actual = null, html = '';
@@ -224,7 +184,6 @@ function dibujarTabla() {
 }
 
 function dibujar() {
-  dibujarServicios();
   dibujarKpis();
   dibujarTurnos();
   dibujarTabla();
@@ -244,14 +203,6 @@ async function cargar(fecha) {
 }
 
 $('fecha').addEventListener('change', () => cargar($('fecha').value));
-$('ant').addEventListener('click', () => { $('fecha').selectedIndex++; cargar($('fecha').value); });
-$('sig').addEventListener('click', () => { $('fecha').selectedIndex--; cargar($('fecha').value); });
-$('servicios').addEventListener('click', e => {
-  const b = e.target.closest('[data-color]');
-  if (!b) return;
-  apagados.has(b.dataset.color) ? apagados.delete(b.dataset.color) : apagados.add(b.dataset.color);
-  dibujar();
-});
 $('turnos').addEventListener('click', e => {
   const b = e.target.closest('[data-turno]');
   if (!b) return;
