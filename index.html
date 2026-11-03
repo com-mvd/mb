@@ -2,7 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- viewport-fit=cover: abierta desde el inicio del iPhone la página ocupa también la zona de la hora;
+     la barra baja su contenido con env(safe-area-inset-top) para que el título no quede en el difuminado de iOS -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- En el celular, la zona de la hora y la batería va del azul de la barra -->
 <meta name="theme-color" content="#0f172a">
 <title>MB</title>
@@ -35,6 +39,9 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 
 /* Barra del título: igual a la de los dashboards de com-mvd */
 .barra{background:linear-gradient(135deg,#0f172a 0%,#16213e 55%,#1b3f74 100%);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+/* En el iPhone abierto desde el inicio, el azul sigue detrás de la hora pero el título baja debajo de ella
+   (en Safari y en la PC env() vale 0 y no cambia nada) */
+.barra{padding-top:env(safe-area-inset-top,0px)}
 .barra-in{max-width:1440px;margin:0 auto;min-height:84px;padding:12px clamp(16px,2.5vw,2rem);display:flex;justify-content:center;align-items:center}
 .titulo h1{font-family:'Segoe UI',Arial,sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
 
