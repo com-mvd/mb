@@ -6,8 +6,7 @@
      la barra baja su contenido con env(safe-area-inset-top) para que el título no quede en el difuminado de iOS -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<!-- "black": zona de la hora opaca y la página empieza debajo (prueba para que iOS no difumine el título) -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- En el celular, la zona de la hora y la batería va del azul de la barra -->
 <meta name="theme-color" content="#0f172a">
 <title>MB</title>
@@ -104,9 +103,11 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .vacio{text-align:center;color:var(--text2);font-size:14px;font-weight:600;padding:2.5rem 1rem}
 
 @media (max-width:760px){
-  .barra-in{padding:10px 16px;min-height:64px}
-  .titulo h1{font-size:21px}
-  .carga{min-height:max(260px,calc(100vh - 64px))}
+  /* En el celular la barra va sin título: solo el azul detrás de la hora y un poco más,
+     lo que tapa el difuminado que pone iOS al abrir desde el ícono */
+  .barra-in{min-height:24px;padding:0}
+  .titulo{display:none}
+  .carga{min-height:max(260px,calc(100vh - 24px))}
   .wrap{padding:1rem 12px 2rem}
 
   /* Barra: la fecha a lo ancho arriba, abajo un renglón de servicios y otro de estados */
