@@ -44,7 +44,8 @@ button,select{font:inherit;color:inherit;cursor:pointer}
 .barra{padding-top:env(safe-area-inset-top,0px)}
 /* Abierta desde el ícono, iOS difumina más que la zona de la hora: el título baja un poco más.
    La clase .app la pone el script solo en ese modo */
-.app .barra{padding-top:calc(env(safe-area-inset-top,0px) + 36px)}
+.app .barra{padding-top:calc(env(safe-area-inset-top,0px) + 34px)}
+.app .barra-in{min-height:0;padding-top:0;padding-bottom:14px}
 /* Franja fija azul detrás de la hora: con un elemento fijo arriba iOS no difumina esa zona.
    Mide lo mismo que la zona de la hora, así que en la PC y en Safari no se ve (alto 0) */
 .zona-hora{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0f172a;z-index:3000;pointer-events:none}
