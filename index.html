@@ -109,6 +109,9 @@ button,select{font:inherit;color:inherit;cursor:pointer}
   .barra-in{min-height:0;padding:0}
   .titulo{display:none}
   .carga{min-height:max(260px,100vh)}
+  /* Abierta desde el ícono, iOS difumina unos píxeles más abajo de la hora:
+     la barra azul se alarga hasta tapar esa franja (en Safari no hay difuminado y queda en 0) */
+  .app .barra-in{min-height:28px}
   .wrap{padding:1rem 12px 2rem}
 
   /* Barra: la fecha a lo ancho arriba, abajo un renglón de servicios y otro de estados */
@@ -194,6 +197,10 @@ const FILTRO_ESTADOS = [
 const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 const $ = id => document.getElementById(id);
+// Abierta como app desde la pantalla de inicio del iPhone
+if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) {
+  document.documentElement.classList.add('app');
+}
 let filas = [];
 let servicio = 'TODOS';
 let estado = 'TODOS';
